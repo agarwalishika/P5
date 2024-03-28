@@ -53,42 +53,43 @@ def get_optimizer(optim, verbose=False):
 def parse_args(parse=True, **optional_kwargs):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--seed', type=int, default=42, help='random seed')
+    parser.add_argument('--seed', type=int, default=2022, help='random seed')
 
     # Data Splits
-    parser.add_argument("--train", default='train')
-    parser.add_argument("--valid", default='valid')
+    parser.add_argument("--train", default='yelp')
+    parser.add_argument("--valid", default='yelp')
     parser.add_argument("--test", default=None)
     parser.add_argument('--test_only', action='store_true')
 
     parser.add_argument('--submit', action='store_true')
 
     # Checkpoint
-    parser.add_argument('--output', type=str, default='snap/pretrain')
+    parser.add_argument('--output', type=str, default='snap/yelp')
     parser.add_argument('--load', type=str, default=None, help='Load the model (usually the fine-tuned model).')
     parser.add_argument('--from_scratch', action='store_true')
 
     # CPU/GPU
     parser.add_argument("--multiGPU", action='store_const', default=False, const=True)
     parser.add_argument('--fp16', action='store_true')
-    parser.add_argument("--distributed", action='store_true')
-    parser.add_argument("--num_workers", default=0, type=int)
+    parser.add_argument("--distributed", action='store_true', default=True)
+    parser.add_argument("--num_workers", default=4, type=int)
     parser.add_argument('--local_rank', type=int, default=-1)
+    parser.add_argument('--local-rank', type=int, default=-1)
 
     # Model Config
     parser.add_argument('--backbone', type=str, default='t5-base')
     parser.add_argument('--tokenizer', type=str, default='p5')
-    parser.add_argument('--whole_word_embed', action='store_true')
+    parser.add_argument('--whole_word_embed', action='store_true', default=True)
 
-    parser.add_argument('--max_text_length', type=int, default=128)
+    parser.add_argument('--max_text_length', type=int, default=512)
 
     # Training
-    parser.add_argument('--batch_size', type=int, default=256)
+    parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--valid_batch_size', type=int, default=None)
     parser.add_argument('--optim', default='adamw')
-    parser.add_argument('--warmup_ratio', type=float, default=0.05)
+    parser.add_argument('--warmup_ratio', type=float, default=0.02)
     parser.add_argument('--weight_decay', type=float, default=0.01)
-    parser.add_argument('--clip_grad_norm', type=float, default=-1.0)
+    parser.add_argument('--clip_grad_norm', type=float, default=1.0)
     parser.add_argument('--gradient_accumulation_steps', type=int, default=1)
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--adam_eps', type=float, default=1e-6)
@@ -97,7 +98,7 @@ def parse_args(parse=True, **optional_kwargs):
     parser.add_argument('--epoch', type=int, default=10)
     parser.add_argument('--dropout', type=float, default=0.1)
 
-    parser.add_argument("--losses", default='rating,sequential,review,metadata,recommend', type=str)
+    parser.add_argument("--losses", default='rating,sequential,explanation,review,traditional', type=str)
     parser.add_argument('--log_train_accuracy', action='store_true')
 
     # Inference
