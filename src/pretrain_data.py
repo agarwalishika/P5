@@ -39,7 +39,7 @@ def parse(path):
 
     
 class P5_Amazon_Dataset(Dataset):
-    def __init__(self, all_tasks, task_list, tokenizer, args, sample_numbers, mode='train', split='toys', rating_augment=False, sample_type='random'): 
+    def __init__(self, all_tasks, task_list, tokenizer, args, sample_numbers, mode='train', split='toys', rating_augment=False, sample_type='random', data_dir='data'): 
         self.all_tasks = all_tasks
         self.task_list = task_list
         self.tokenizer = tokenizer
@@ -52,31 +52,31 @@ class P5_Amazon_Dataset(Dataset):
         print('Data sources: ', split.split(','))
         self.mode = mode
         if self.mode == 'train':
-            self.review_data = load_pickle(os.path.join('data', split, 'review_splits.pkl'))['train']
-            self.exp_data = load_pickle(os.path.join('data', split, 'exp_splits.pkl'))['train']
+            self.review_data = load_pickle(os.path.join(data_dir, split, 'review_splits.pkl'))['train']
+            self.exp_data = load_pickle(os.path.join(data_dir, split, 'exp_splits.pkl'))['train']
             if self.rating_augment:
-                self.rating_data = load_pickle(os.path.join('data', split, 'rating_splits_augmented.pkl'))['train']
+                self.rating_data = load_pickle(os.path.join(data_dir, split, 'rating_splits_augmented.pkl'))['train']
             else:
                 self.rating_data = self.review_data
         elif self.mode == 'val':
-            self.review_data = load_pickle(os.path.join('data', split, 'review_splits.pkl'))['val']
-            self.exp_data = load_pickle(os.path.join('data', split, 'exp_splits.pkl'))['val']
+            self.review_data = load_pickle(os.path.join(data_dir, split, 'review_splits.pkl'))['val']
+            self.exp_data = load_pickle(os.path.join(data_dir, split, 'exp_splits.pkl'))['val']
             if self.rating_augment:
-                self.rating_data = load_pickle(os.path.join('data', split, 'rating_splits_augmented.pkl'))['val']
+                self.rating_data = load_pickle(os.path.join(data_dir, split, 'rating_splits_augmented.pkl'))['val']
             else:
                 self.rating_data = self.review_data
         elif self.mode == 'test':
-            self.review_data = load_pickle(os.path.join('data', split, 'review_splits.pkl'))['test']
-            self.exp_data = load_pickle(os.path.join('data', split, 'exp_splits.pkl'))['test']
+            self.review_data = load_pickle(os.path.join(data_dir, split, 'review_splits.pkl'))['test']
+            self.exp_data = load_pickle(os.path.join(data_dir, split, 'exp_splits.pkl'))['test']
             if self.rating_augment:
-                self.rating_data = load_pickle(os.path.join('data', split, 'rating_splits_augmented.pkl'))['test']
+                self.rating_data = load_pickle(os.path.join(data_dir, split, 'rating_splits_augmented.pkl'))['test']
             else:
                 self.rating_data = self.review_data
-            self.zeroshot_exp_data = load_pickle(os.path.join('data', 'beauty', 'zeroshot_exp_splits.pkl')) # change to dataset to be transferred (e.g., 'beauty')
+            self.zeroshot_exp_data = load_pickle(os.path.join(data_dir, 'beauty', 'zeroshot_exp_splits.pkl')) # change to dataset to be transferred (e.g., 'beauty')
         else:
             raise NotImplementedError
             
-        self.sequential_data = ReadLineFromFile(os.path.join('data', split, 'sequential_data.txt'))
+        self.sequential_data = ReadLineFromFile(os.path.join(data_dir, split, 'sequential_data.txt'))
         item_count = defaultdict(int)
         user_items = defaultdict()
 
@@ -95,19 +95,19 @@ class P5_Amazon_Dataset(Dataset):
         self.user_items = user_items
         
         if self.mode == 'test':
-            self.negative_samples = ReadLineFromFile(os.path.join('data', split, 'negative_samples.txt'))
+            self.negative_samples = ReadLineFromFile(os.path.join(data_dir, split, 'negative_samples.txt'))
             
-        datamaps = load_json(os.path.join('data', split, 'datamaps.json'))
+        datamaps = load_json(os.path.join(data_dir, split, 'datamaps.json'))
         self.user2id = datamaps['user2id']
         self.item2id = datamaps['item2id']
         self.user_list = list(datamaps['user2id'].keys())
         self.item_list = list(datamaps['item2id'].keys())
         self.id2item = datamaps['id2item']
         
-        self.user_id2name = load_pickle(os.path.join('data', split, 'user_id2name.pkl'))
+        self.user_id2name = load_pickle(os.path.join(data_dir, split, 'user_id2name.pkl'))
         
         self.meta_data = []
-        for meta in parse(os.path.join('data', split, 'meta.json.gz')):
+        for meta in parse(os.path.join(data_dir, split, 'meta.json.gz')):
             self.meta_data.append(meta)
         self.meta_dict = {}
         for i, meta_item in enumerate(self.meta_data):
@@ -936,7 +936,7 @@ class P5_Amazon_Dataset(Dataset):
 
     
 class P5_Yelp_Dataset(Dataset):
-    def __init__(self, all_tasks, task_list, tokenizer, args, sample_numbers, mode='train', split='yelp', rating_augment=False, sample_type='random'): 
+    def __init__(self, all_tasks, task_list, tokenizer, args, sample_numbers, mode='train', split='yelp', rating_augment=False, sample_type='random', data_dir='data'): 
         self.all_tasks = all_tasks
         self.task_list = task_list
         self.tokenizer = tokenizer
@@ -949,30 +949,30 @@ class P5_Yelp_Dataset(Dataset):
         print('Data sources: ', split.split(','))
         self.mode = mode
         if self.mode == 'train':
-            self.review_data = load_pickle(os.path.join('data', split, 'review_splits.pkl'))['train']
-            self.exp_data = load_pickle(os.path.join('data', split, 'exp_splits.pkl'))['train']
+            self.review_data = load_pickle(os.path.join(data_dir, split, 'review_splits.pkl'))['train']
+            self.exp_data = load_pickle(os.path.join(data_dir, split, 'exp_splits.pkl'))['train']
             if self.rating_augment:
-                self.rating_data = load_pickle(os.path.join('data', split, 'rating_splits_augmented.pkl'))['train']
+                self.rating_data = load_pickle(os.path.join(data_dir, split, 'rating_splits_augmented.pkl'))['train']
             else:
                 self.rating_data = self.review_data
         elif self.mode == 'val':
-            self.review_data = load_pickle(os.path.join('data', split, 'review_splits.pkl'))['val']
-            self.exp_data = load_pickle(os.path.join('data', split, 'exp_splits.pkl'))['val']
+            self.review_data = load_pickle(os.path.join(data_dir, split, 'review_splits.pkl'))['val']
+            self.exp_data = load_pickle(os.path.join(data_dir, split, 'exp_splits.pkl'))['val']
             if self.rating_augment:
-                self.rating_data = load_pickle(os.path.join('data', split, 'rating_splits_augmented.pkl'))['val']
+                self.rating_data = load_pickle(os.path.join(data_dir, split, 'rating_splits_augmented.pkl'))['val']
             else:
                 self.rating_data = self.review_data
         elif self.mode == 'test':
-            self.review_data = load_pickle(os.path.join('data', split, 'review_splits.pkl'))['test']
-            self.exp_data = load_pickle(os.path.join('data', split, 'exp_splits.pkl'))['test']
+            self.review_data = load_pickle(os.path.join(data_dir, split, 'review_splits.pkl'))['test']
+            self.exp_data = load_pickle(os.path.join(data_dir, split, 'exp_splits.pkl'))['test']
             if self.rating_augment:
-                self.rating_data = load_pickle(os.path.join('data', split, 'rating_splits_augmented.pkl'))['test']
+                self.rating_data = load_pickle(os.path.join(data_dir, split, 'rating_splits_augmented.pkl'))['test']
             else:
                 self.rating_data = self.review_data
         else:
             raise NotImplementedError
             
-        self.sequential_data = ReadLineFromFile(os.path.join('data', split, 'sequential_data.txt'))
+        self.sequential_data = ReadLineFromFile(os.path.join(data_dir, split, 'sequential_data.txt'))
         item_count = defaultdict(int)
         user_items = defaultdict()
 
@@ -991,19 +991,19 @@ class P5_Yelp_Dataset(Dataset):
         self.user_items = user_items
         
         if self.mode == 'test':
-            self.negative_samples = ReadLineFromFile(os.path.join('data', split, 'negative_samples.txt'))
+            self.negative_samples = ReadLineFromFile(os.path.join(data_dir, split, 'negative_samples.txt'))
             
-        datamaps = load_json(os.path.join('data', split, 'datamaps.json'))
+        datamaps = load_json(os.path.join(data_dir, split, 'datamaps.json'))
         self.user2id = datamaps['user2id']
         self.item2id = datamaps['item2id']
         self.user_list = list(datamaps['user2id'].keys())
         self.item_list = list(datamaps['item2id'].keys())
         self.id2item = datamaps['id2item']
         
-        self.user_id2name = load_pickle(os.path.join('data', split, 'user_id2name.pkl'))
+        self.user_id2name = load_pickle(os.path.join(data_dir, split, 'user_id2name.pkl'))
             
-        self.meta_data = load_pickle(os.path.join('data', split, 'meta_data.pkl'))
-        self.user_data = load_pickle(os.path.join('data', split, 'user_data.pkl'))
+        self.meta_data = load_pickle(os.path.join(data_dir, split, 'meta_data.pkl'))
+        self.user_data = load_pickle(os.path.join(data_dir, split, 'user_data.pkl'))
         self.meta_dict = {}
         for i, meta_item in enumerate(self.meta_data):
             self.meta_dict[meta_item['business_id']] = i
@@ -1743,7 +1743,7 @@ class P5_Yelp_Dataset(Dataset):
     
 
 def get_loader(args, task_list, sample_numbers, split='toys', mode='train', 
-               batch_size=16, workers=4, distributed=False):
+               batch_size=16, workers=4, distributed=False, data_dir='data'):
 
     if 't5' in args.backbone:
         tokenizer = P5Tokenizer.from_pretrained(
@@ -1762,7 +1762,8 @@ def get_loader(args, task_list, sample_numbers, split='toys', mode='train',
             sample_numbers,
             mode=mode,
             split=split,
-            rating_augment=False
+            rating_augment=False,
+            data_dir=data_dir
         )
     else:
         from all_amazon_templates import all_tasks as task_templates
@@ -1775,7 +1776,8 @@ def get_loader(args, task_list, sample_numbers, split='toys', mode='train',
             sample_numbers,
             mode=mode,
             split=split,
-            rating_augment=False
+            rating_augment=False,
+            data_dir=data_dir
         )
 
     if distributed:

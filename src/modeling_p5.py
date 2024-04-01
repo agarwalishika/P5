@@ -167,6 +167,17 @@ class JointEncoder(T5Stack):
             cross_attentions=all_cross_attentions,
         )
 
+class Network_exploration(nn.Module):
+    def __init__(self, dev, dim, hidden_size=100, k=10):
+        super(Network_exploration, self).__init__()
+        self.fc1 = nn.Linear(dim, hidden_size)
+        self.activate = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, k)
+        self.cuda()
+
+    def forward(self, x):
+        return self.fc2(self.activate(self.fc1(x)))
+
 
 class P5(T5ForConditionalGeneration):
     _keys_to_ignore_on_load_missing = [
@@ -206,6 +217,7 @@ class P5(T5ForConditionalGeneration):
 
         self.model_parallel = False
         self.device_map = None
+        self.exploration_net = Network_exploration()
 
     def set_input_embeddings(self, new_embeddings):
         self.shared = new_embeddings

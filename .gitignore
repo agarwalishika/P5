@@ -1,0 +1,6 @@
+__pycache__/
+.vscode
+*.log
+data
+P5_data.zip
+snap/
